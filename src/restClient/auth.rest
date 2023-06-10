@@ -1,2 +1,9 @@
 ###
-GET 
+POST https://localhost:8080/auth/signup
+Content-Type: 'application/json'
+
+{
+    "email": "jahanzaibrao@gmail.com",
+    "password": "1234567890",
+    "name": "Jahanzaib Rao"
+}
