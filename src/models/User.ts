@@ -15,9 +15,13 @@ export interface SignupPayload extends LoginPayload {
 }
 
 export interface SignupResponse {
-  token: string
+  accessToken: string
   code: number
   message: string
+}
+
+export interface LoginResponse extends SignupResponse {
+  refreshToken: string
 }
 export interface SessionResponse {
   _id: string
