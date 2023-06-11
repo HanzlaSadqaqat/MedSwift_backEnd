@@ -1,0 +1,149 @@
+components:
+    examples: {}
+    headers: {}
+    parameters: {}
+    requestBodies: {}
+    responses: {}
+    schemas:
+        SignupResponse:
+            properties:
+                token:
+                    type: string
+                code:
+                    type: number
+                    format: double
+                message:
+                    type: string
+            required:
+                - token
+                - code
+                - message
+            type: object
+            additionalProperties: false
+        SignupPayload:
+            properties:
+                email:
+                    type: string
+                password:
+                    type: string
+                name:
+                    type: string
+            required:
+                - email
+                - password
+                - name
+            type: object
+            additionalProperties: false
+        LoginPayload:
+            properties:
+                email:
+                    type: string
+                password:
+                    type: string
+            required:
+                - email
+                - password
+            type: object
+            additionalProperties: false
+        SessionResponse:
+            properties:
+                _id:
+                    type: string
+                name:
+                    type: string
+                email:
+                    type: string
+            required:
+                - _id
+                - name
+                - email
+            type: object
+            additionalProperties: false
+    securitySchemes:
+        bearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+info:
+    title: express-typescript
+    version: 1.0.0
+    license:
+        name: ISC
+    contact: {}
+openapi: 3.0.0
+paths:
+    /api/auth/signup:
+        post:
+            operationId: Signup
+            responses:
+                '200':
+                    description: Ok
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SignupResponse'
+                            examples:
+                                'Example 1':
+                                    value: {token: 'JWT Token', code: 200, message: 'Signed Up Successfully'}
+            tags:
+                - Auth
+            security: []
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SignupPayload'
+    /api/auth/login:
+        post:
+            operationId: Login
+            responses:
+                '200':
+                    description: Ok
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SignupResponse'
+                            examples:
+                                'Example 1':
+                                    value: {token: 'JWT Token', code: 200, message: 'Signed Up Successfully'}
+            tags:
+                - Auth
+            security: []
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/LoginPayload'
+    /api/session:
+        get:
+            operationId: GetSessionInfo
+            responses:
+                '200':
+                    description: Ok
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SessionResponse'
+                            examples:
+                                'Example 1':
+                                    value: {_id: '3928439', name: 'HS Rajput', email: email@gmail.com}
+            tags:
+                - Session
+            security:
+                -
+                    bearerAuth: []
+            parameters: []
+servers:
+    -
+        url: /
+tags:
+    -
+        name: Auth
+        description: 'Operations about auth'
+    -
+        name: Session
+        description: 'Operations about session'
