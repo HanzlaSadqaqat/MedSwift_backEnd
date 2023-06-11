@@ -1,11 +1,28 @@
 import mongoose, { Document, Model } from 'mongoose'
 let schema = mongoose.Schema
 
-export interface UserDocument extends Document {
-  name: string
+export interface UserDocument extends SignupPayload, Document {
+  token: string
+}
+
+export interface LoginPayload {
   email: string
   password: string
+}
+
+export interface SignupPayload extends LoginPayload {
+  name: string
+}
+
+export interface SignupResponse {
   token: string
+  code: number
+  message: string
+}
+export interface SessionResponse {
+  _id: string
+  name: string
+  email: string
 }
 
 let userSchema = new schema<UserDocument>({

@@ -1,0 +1,29 @@
+{
+  "entryFile": "src/app.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "spec": {
+    "outputDirectory": "public",
+    "specVersion": 3,
+    "yaml": true,
+    "securityDefinitions": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "tags": [
+      {
+        "name": "Auth",
+        "description": "Operations about auth"
+      },
+      {
+        "name": "Session",
+        "description": "Operations about session"
+      }
+    ]
+  },
+  "routes": {
+    "routesDir": "public"
+  }
+}

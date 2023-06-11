@@ -8,7 +8,7 @@ let sessionRouter = express.Router()
 
 sessionRouter.get('/', validateAccessToken, async (req, res) => {
   try {
-    let matchUser = await controller.getSessionInfo(req.user?.email, req.user?._id)
+    let matchUser = await controller.getSessionInfo(req)
     console.log(matchUser)
 
     return res.send(matchUser)

@@ -1,8 +1,15 @@
-import User, { UserDocument } from '../models/User'
+import User, { LoginPayload, SignupPayload, SignupResponse, UserDocument } from '../models/User'
 import * as bcrypt from 'bcrypt'
 import { generateAccessToken } from '../utils/generateAccessToken'
+import { Body, Example, Post, Route, Tags } from 'tsoa'
+import { signupExample } from './Examples/authExamples'
+
+@Route('api/auth')
+@Tags('Auth')
 export class AuthController {
-  async signup(body: any) {
+  @Post('/signup')
+  @Example<SignupResponse>(signupExample)
+  async signup(@Body() body: SignupPayload): Promise<SignupResponse> {
     let { name, email, password } = body
     let existingUser: UserDocument | null = await User.findOne({ email })
     if (existingUser) {
@@ -35,7 +42,10 @@ export class AuthController {
       message: 'User Created Successfully'
     }
   }
-  async login(body: any) {
+
+  @Post('/login')
+  @Example<SignupResponse>(signupExample)
+  async login(@Body() body: LoginPayload): Promise<SignupResponse> {
     let { email, password } = body
     let existingUser: any = await User.findOne({ email })
     let isMatch = await bcrypt.compare(password, existingUser.password)
