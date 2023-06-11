@@ -20,31 +20,6 @@ components:
                 - message
             type: object
             additionalProperties: false
-        SignupPayload:
-            properties:
-                email:
-                    type: string
-                password:
-                    type: string
-                name:
-                    type: string
-            required:
-                - email
-                - password
-                - name
-            type: object
-            additionalProperties: false
-        LoginPayload:
-            properties:
-                email:
-                    type: string
-                password:
-                    type: string
-            required:
-                - email
-                - password
-            type: object
-            additionalProperties: false
         SessionResponse:
             properties:
                 _id:
@@ -92,9 +67,20 @@ paths:
             requestBody:
                 required: true
                 content:
-                    application/json:
+                    multipart/form-data:
                         schema:
-                            $ref: '#/components/schemas/SignupPayload'
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                email:
+                                    type: string
+                                password:
+                                    type: string
+                            required:
+                                - name
+                                - email
+                                - password
     /api/auth/login:
         post:
             operationId: Login
@@ -115,9 +101,17 @@ paths:
             requestBody:
                 required: true
                 content:
-                    application/json:
+                    multipart/form-data:
                         schema:
-                            $ref: '#/components/schemas/LoginPayload'
+                            type: object
+                            properties:
+                                email:
+                                    type: string
+                                password:
+                                    type: string
+                            required:
+                                - email
+                                - password
     /api/session:
         get:
             operationId: GetSessionInfo

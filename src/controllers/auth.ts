@@ -1,16 +1,16 @@
-import User, { LoginPayload, SignupPayload, SignupResponse, UserDocument } from '../models/User'
+import User, { LoginResponse, SignupResponse, UserDocument } from '../models/User'
 import * as bcrypt from 'bcrypt'
 import { generateAccessToken } from '../utils/generateAccessToken'
-import { Body, Example, Post, Route, Tags } from 'tsoa'
-import { signupExample } from './Examples/authExamples'
+import { Example, FormField, Post, Route, Tags } from 'tsoa'
+import { LoginExample, signupExample } from './Examples/authExamples'
+import { generateRefreshToken } from '../utils/generateRefreshToken'
 
 @Route('api/auth')
 @Tags('Auth')
 export class AuthController {
   @Post('/signup')
   @Example<SignupResponse>(signupExample)
-  async signup(@Body() body: SignupPayload): Promise<SignupResponse> {
-    let { name, email, password } = body
+  async signup(@FormField() name, @FormField() email, @FormField() password): Promise<SignupResponse> {
     let existingUser: UserDocument | null = await User.findOne({ email })
     if (existingUser) {
       throw {
@@ -38,15 +38,14 @@ export class AuthController {
 
     return {
       code: 200,
-      token: token,
+      accessToken: token,
       message: 'User Created Successfully'
     }
   }
 
   @Post('/login')
-  @Example<SignupResponse>(signupExample)
-  async login(@Body() body: LoginPayload): Promise<SignupResponse> {
-    let { email, password } = body
+  @Example<LoginResponse>(LoginExample)
+  async login(@FormField() email, @FormField() password): Promise<LoginResponse> {
     let existingUser: any = await User.findOne({ email })
     let isMatch = await bcrypt.compare(password, existingUser.password)
     if (!isMatch)
@@ -55,12 +54,13 @@ export class AuthController {
         message: 'invalid'
       }
     // //login token generate
-    let token: string = generateAccessToken({ email: existingUser.email, id: existingUser._id })
-    // let token: string = Jwt.sign({ email: existingUser.email, id: existingUser._id }, secrete)
+    let accessToken: string = generateAccessToken({ email: existingUser.email, id: existingUser._id })
+    let refreshToken: string = generateRefreshToken({ email: existingUser.email, id: existingUser._id })
 
     return {
       code: 200,
-      token: token,
+      accessToken,
+      refreshToken,
       message: 'You login successfully'
     }
   }
