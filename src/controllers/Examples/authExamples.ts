@@ -1,7 +1,6 @@
 import { LoginResponse, SignupResponse } from '../../models/User'
 
 export const signupExample: SignupResponse = {
-  accessToken: 'JWT Token',
   code: 200,
   message: 'Signed Up Successfully'
 }
