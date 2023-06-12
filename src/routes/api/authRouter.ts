@@ -2,8 +2,8 @@ import express, { Request, Response } from 'express'
 import { AuthController } from '../../controllers/auth'
 import { signUpValidation, loginValidation } from '../../utils/authValidation'
 import { LoginResponse, SignupResponse } from 'src/models/User'
-// import User from '../../models/User'
-// import * as bcrypt from 'bcrypt'
+// import { sendEmail } from '../../utils/createMail'
+
 const authRouter = express.Router()
 
 const controller = new AuthController()
@@ -15,9 +15,10 @@ authRouter.post('/signup', async (req: Request, res: Response) => {
     if (error) return res.status(403).send(error.details[0].message)
     const response: SignupResponse = await controller.signup(body.name, body.email, body.password)
     console.log(response)
+
     return res.status(200).send(response)
   } catch (err) {
-    return res.status(err.code).send(err.message)
+    return res.status(err.code || 403).send(err.message)
   }
 })
 authRouter.post('/login', async (req: Request, res: Response) => {

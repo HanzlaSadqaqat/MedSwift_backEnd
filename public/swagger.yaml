@@ -7,17 +7,32 @@ components:
     schemas:
         SignupResponse:
             properties:
-                token:
-                    type: string
                 code:
                     type: number
                     format: double
                 message:
                     type: string
             required:
-                - token
                 - code
                 - message
+            type: object
+            additionalProperties: false
+        LoginResponse:
+            properties:
+                code:
+                    type: number
+                    format: double
+                message:
+                    type: string
+                refreshToken:
+                    type: string
+                accessToken:
+                    type: string
+            required:
+                - code
+                - message
+                - refreshToken
+                - accessToken
             type: object
             additionalProperties: false
         SessionResponse:
@@ -59,7 +74,7 @@ paths:
                                 $ref: '#/components/schemas/SignupResponse'
                             examples:
                                 'Example 1':
-                                    value: {token: 'JWT Token', code: 200, message: 'Signed Up Successfully'}
+                                    value: {code: 200, message: 'Signed Up Successfully'}
             tags:
                 - Auth
             security: []
@@ -90,10 +105,10 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/SignupResponse'
+                                $ref: '#/components/schemas/LoginResponse'
                             examples:
                                 'Example 1':
-                                    value: {token: 'JWT Token', code: 200, message: 'Signed Up Successfully'}
+                                    value: {accessToken: 'JWT Token', refreshToken: 'JWT Token', code: 200, message: 'Signed Up Successfully'}
             tags:
                 - Auth
             security: []

@@ -4,6 +4,8 @@ import { generateAccessToken } from '../utils/generateAccessToken'
 import { Example, FormField, Post, Route, Tags } from 'tsoa'
 import { LoginExample, signupExample } from './Examples/authExamples'
 import { generateRefreshToken } from '../utils/generateRefreshToken'
+import { sendEmail } from '../utils/sendEmail'
+import randomstring from 'randomstring'
 
 @Route('api/auth')
 @Tags('Auth')
@@ -22,23 +24,25 @@ export class AuthController {
     //create hash of your password
     let hashPassword = await bcrypt.hash(password, 10)
 
+    console.log('password hashed')
+
     //create new user
     let newUser: UserDocument = new User({ name: name, email: email, password: hashPassword })
 
-    //save user in database
-    let token: string = generateAccessToken({ email: newUser.email, id: newUser._id })
-    if (!token)
-      throw {
-        code: 403,
-        message: 'Token not generated'
-      }
-    newUser.token = token
+    newUser.verified = false
+    let subject = 'Email Verification'
+    const verificationCode = randomstring.generate({
+      length: 6,
+      charset: 'numeric'
+    })
+    const html = `<p>Your Verification Code is: <strong>${verificationCode}</strong></p>`
+    await sendEmail({ email: newUser.email, subject, html })
+    newUser.verificationCode = verificationCode
     await newUser.save()
     // generate token in signup function
 
     return {
       code: 200,
-      accessToken: token,
       message: 'User Created Successfully'
     }
   }
