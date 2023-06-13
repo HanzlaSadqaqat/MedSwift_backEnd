@@ -127,6 +127,43 @@ paths:
                             required:
                                 - email
                                 - password
+    /api/auth/email/verify:
+        post:
+            operationId: VerifyEmail
+            responses:
+                '200':
+                    description: Ok
+                    content:
+                        application/json:
+                            schema:
+                                properties:
+                                    message: {type: string}
+                                    code: {type: number, format: double}
+                                required:
+                                    - message
+                                    - code
+                                type: object
+                            examples:
+                                'Example 1':
+                                    value: {code: 200, message: 'Your account is verified successfully'}
+            tags:
+                - Auth
+            security: []
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    multipart/form-data:
+                        schema:
+                            type: object
+                            properties:
+                                email:
+                                    type: string
+                                verificationCode:
+                                    type: string
+                            required:
+                                - email
+                                - verificationCode
     /api/session:
         get:
             operationId: GetSessionInfo

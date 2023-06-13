@@ -4,7 +4,7 @@ let schema = mongoose.Schema
 export interface UserDocument extends SignupPayload, Document {
   token: string
   verified: boolean
-  verificationCode: number
+  verificationCode: string
 }
 
 export interface LoginPayload {
@@ -36,6 +36,10 @@ export interface sendEmailDetail {
   text?: string
   html?: string
 }
+export interface verifyResponse {
+  message: string
+  code: number
+}
 
 let userSchema = new schema<UserDocument>({
   name: { type: String, required: true },
@@ -43,7 +47,7 @@ let userSchema = new schema<UserDocument>({
   password: { type: String, required: true },
   token: { type: String },
   verified: { type: Boolean },
-  verificationCode: { type: Number }
+  verificationCode: { type: String }
 })
 
 const User: Model<UserDocument> = mongoose.model<UserDocument>('User', userSchema)

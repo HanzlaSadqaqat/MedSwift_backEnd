@@ -1,8 +1,8 @@
-import User, { LoginResponse, SignupResponse, UserDocument } from '../models/User'
+import User, { LoginResponse, SignupResponse, UserDocument, verifyResponse } from '../models/User'
 import * as bcrypt from 'bcrypt'
 import { generateAccessToken } from '../utils/generateAccessToken'
 import { Example, FormField, Post, Route, Tags } from 'tsoa'
-import { LoginExample, signupExample } from './Examples/authExamples'
+import { LoginExample, signupExample, verificationExample } from './Examples/authExamples'
 import { generateRefreshToken } from '../utils/generateRefreshToken'
 import { sendEmail } from '../utils/sendEmail'
 import randomstring from 'randomstring'
@@ -31,10 +31,12 @@ export class AuthController {
 
     newUser.verified = false
     let subject = 'Email Verification'
-    const verificationCode = randomstring.generate({
-      length: 6,
-      charset: 'numeric'
-    })
+    const verificationCode = randomstring
+      .generate({
+        length: 6,
+        charset: 'numeric'
+      })
+      .toString()
     const html = `<p>Your Verification Code is: <strong>${verificationCode}</strong></p>`
     await sendEmail({ email: newUser.email, subject, html })
     newUser.verificationCode = verificationCode
@@ -50,22 +52,58 @@ export class AuthController {
   @Post('/login')
   @Example<LoginResponse>(LoginExample)
   async login(@FormField() email, @FormField() password): Promise<LoginResponse> {
-    let existingUser: any = await User.findOne({ email })
-    let isMatch = await bcrypt.compare(password, existingUser.password)
+    const existingUser = await User.findOne({ email })
+    if (!existingUser) {
+      throw {
+        code: 403,
+        message: 'invalid Login Details'
+      }
+    }
+    const isMatch = await bcrypt.compare(password, existingUser.password)
     if (!isMatch)
       throw {
         code: 403,
-        message: 'invalid'
+        message: 'invalid Login Details'
       }
-    // //login token generate
+
+    //login token generate
+
+    if (existingUser.verified === false)
+      throw {
+        code: 400,
+        message: 'Please Verify Your Email Account!'
+      }
     let accessToken: string = generateAccessToken({ email: existingUser.email, id: existingUser._id })
     let refreshToken: string = generateRefreshToken({ email: existingUser.email, id: existingUser._id })
-
     return {
       code: 200,
       accessToken,
       refreshToken,
       message: 'You login successfully'
+    }
+  }
+  @Post('/email/verify')
+  @Example<verifyResponse>(verificationExample)
+  async verifyEmail(@FormField() email: string, @FormField() verificationCode: string) {
+    console.log(email)
+    console.log(verificationCode)
+    let user = await User.findOne({ email })
+    if (!user)
+      throw {
+        code: 403,
+        message: 'Invalid Details'
+      }
+    if (user.verificationCode === verificationCode) {
+      user.verified = true
+      await user.save()
+      return {
+        code: 200,
+        message: 'Your Code verified successfully'
+      }
+    }
+    return {
+      code: 403,
+      message: 'Invalid Code'
     }
   }
 }

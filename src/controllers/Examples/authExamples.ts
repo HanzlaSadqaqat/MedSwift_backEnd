@@ -1,4 +1,4 @@
-import { LoginResponse, SignupResponse } from '../../models/User'
+import { LoginResponse, SignupResponse, verifyResponse } from '../../models/User'
 
 export const signupExample: SignupResponse = {
   code: 200,
@@ -9,4 +9,9 @@ export const LoginExample: LoginResponse = {
   refreshToken: 'JWT Token',
   code: 200,
   message: 'Signed Up Successfully'
+}
+
+export const verificationExample: verifyResponse = {
+  code: 200,
+  message: 'Your account is verified successfully'
 }
