@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "prebuild": "npm run swagger",
+    "prebuild": "npm run swagger && npm i",
     "build": "rimraf dist && npx tsc",
     "postbuild": "npm run public:copy",
     "public:copy": "cp -r ./public/ ./dist/public/",
