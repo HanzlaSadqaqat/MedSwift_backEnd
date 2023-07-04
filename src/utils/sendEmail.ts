@@ -14,7 +14,6 @@ const initializeMailer = () =>
 
 export const sendEmail = async (data: sendEmailDetail) => {
   try {
-    console.log('sendEmail')
     const mailer = initializeMailer()
 
     await mailer.sendMail({
@@ -24,6 +23,7 @@ export const sendEmail = async (data: sendEmailDetail) => {
       html: data.html,
       text: data.text
     })
+    console.log('sendEmail')
     return
   } catch (error) {
     console.log(error)
