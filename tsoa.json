@@ -20,6 +20,10 @@
       {
         "name": "Session",
         "description": "Operations about session"
+      },
+      {
+        "name": "Medicine",
+        "description": "Operations about Medicine"
       }
     ]
   },

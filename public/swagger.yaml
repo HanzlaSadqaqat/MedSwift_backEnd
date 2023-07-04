@@ -49,6 +49,18 @@ components:
                 - email
             type: object
             additionalProperties: false
+        MedicineResponse:
+            properties:
+                code:
+                    type: number
+                    format: double
+                message:
+                    type: string
+            required:
+                - code
+                - message
+            type: object
+            additionalProperties: false
     securitySchemes:
         bearerAuth:
             type: http
@@ -92,10 +104,13 @@ paths:
                                     type: string
                                 password:
                                     type: string
+                                role:
+                                    type: string
                             required:
                                 - name
                                 - email
                                 - password
+                                - role
     /api/auth/login:
         post:
             operationId: Login
@@ -183,6 +198,55 @@ paths:
                 -
                     bearerAuth: []
             parameters: []
+    /api/medicine:
+        post:
+            operationId: GetMedicinesInfo
+            responses:
+                '200':
+                    description: Ok
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MedicineResponse'
+                            examples:
+                                'Example 1':
+                                    value: {code: 200, message: 'Medicine add successfully'}
+            tags:
+                - Medicine
+            security: []
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    multipart/form-data:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                description:
+                                    type: string
+                                weight:
+                                    type: string
+                                expireDate:
+                                    type: string
+                                dosageInstructions:
+                                    type: string
+                                availability:
+                                    type: string
+                                price:
+                                    type: string
+                                quantity:
+                                    type: string
+                            required:
+                                - name
+                                - description
+                                - weight
+                                - expireDate
+                                - dosageInstructions
+                                - availability
+                                - price
+                                - quantity
 servers:
     -
         url: /
@@ -193,3 +257,6 @@ tags:
     -
         name: Session
         description: 'Operations about session'
+    -
+        name: Medicine
+        description: 'Operations about Medicine'

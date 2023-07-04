@@ -12,36 +12,35 @@ import randomstring from 'randomstring'
 export class AuthController {
   @Post('/signup')
   @Example<SignupResponse>(signupExample)
-  async signup(@FormField() name, @FormField() email, @FormField() password): Promise<SignupResponse> {
-    let existingUser: UserDocument | null = await User.findOne({ email })
+  async signup(
+    @FormField() name,
+    @FormField() email,
+    @FormField() password,
+    @FormField() conformPassword,
+    @FormField() role
+  ): Promise<SignupResponse> {
+    const existingUser: UserDocument | null = await User.findOne({ email })
     if (existingUser) {
       throw {
         code: 403,
         message: 'User Already Exists'
       }
     }
-
+    const check: boolean = password === conformPassword
+    if (!check)
+      throw {
+        code: 403,
+        message: 'Conform password not matched'
+      }
     //create hash of your password
-    let hashPassword = await bcrypt.hash(password, 10)
-
-    console.log('password hashed')
+    const hashPassword = await bcrypt.hash(password, 10)
 
     //create new user
-    let newUser: UserDocument = new User({ name: name, email: email, password: hashPassword })
+    const newUser: UserDocument = new User({ name: name, email: email, password: hashPassword, role: role })
 
     newUser.verified = false
-    let subject = 'Email Verification'
-    const verificationCode = randomstring
-      .generate({
-        length: 6,
-        charset: 'numeric'
-      })
-      .toString()
-    const html = `<p>Your Verification Code is: <strong>${verificationCode}</strong></p>`
-    await sendEmail({ email: newUser.email, subject, html })
-    newUser.verificationCode = verificationCode
+
     await newUser.save()
-    // generate token in signup function
 
     return {
       code: 200,
@@ -52,7 +51,7 @@ export class AuthController {
   @Post('/login')
   @Example<LoginResponse>(LoginExample)
   async login(@FormField() email, @FormField() password): Promise<LoginResponse> {
-    const existingUser = await User.findOne({ email })
+    const existingUser: UserDocument | null = await User.findOne({ email })
     if (!existingUser) {
       throw {
         code: 403,
@@ -66,15 +65,15 @@ export class AuthController {
         message: 'invalid Login Details'
       }
 
-    //login token generate
-
     if (existingUser.verified === false)
       throw {
-        code: 400,
+        code: 403,
         message: 'Please Verify Your Email Account!'
       }
-    let accessToken: string = generateAccessToken({ email: existingUser.email, id: existingUser._id })
-    let refreshToken: string = generateRefreshToken({ email: existingUser.email, id: existingUser._id })
+    //login token generate
+
+    const accessToken: string = generateAccessToken({ email: existingUser.email, id: existingUser._id })
+    const refreshToken: string = generateRefreshToken({ email: existingUser.email, id: existingUser._id })
     return {
       code: 200,
       accessToken,
@@ -85,9 +84,7 @@ export class AuthController {
   @Post('/email/verify')
   @Example<verifyResponse>(verificationExample)
   async verifyEmail(@FormField() email: string, @FormField() verificationCode: string) {
-    console.log(email)
-    console.log(verificationCode)
-    let user = await User.findOne({ email })
+    const user: UserDocument | null = await User.findOne({ email })
     if (!user)
       throw {
         code: 403,
@@ -104,6 +101,33 @@ export class AuthController {
     return {
       code: 403,
       message: 'Invalid Code'
+    }
+  }
+
+  async sendEmail(email) {
+    const findUser: UserDocument | null = await User.findOne({ email })
+
+    if (!findUser)
+      throw {
+        code: 403,
+        message: 'User not found!'
+      }
+
+    if (findUser.verified === true) return { code: 403, message: 'You are already verified!' }
+    const subject = 'Email Verification'
+    const verificationCode = randomstring
+      .generate({
+        length: 6,
+        charset: 'numeric'
+      })
+      .toString()
+    const html = `<p>Your Verification Code is: <strong>${verificationCode}</strong></p>`
+    await sendEmail({ email: findUser.email, subject, html })
+    findUser.verificationCode = verificationCode
+    findUser.save()
+    return {
+      code: 200,
+      message: 'Code send successfully'
     }
   }
 }

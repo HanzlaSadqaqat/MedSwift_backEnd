@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { Request, Response } from 'express'
 import validateAccessToken from '../../middleware/authenticateToken'
 import { sessionController } from '../../controllers/session'
 
@@ -6,7 +6,7 @@ let controller = new sessionController()
 
 let sessionRouter = express.Router()
 
-sessionRouter.get('/', validateAccessToken, async (req, res) => {
+sessionRouter.get('/', validateAccessToken, async (req: Request, res: Response) => {
   try {
     let matchUser = await controller.getSessionInfo(req)
     console.log(matchUser)
