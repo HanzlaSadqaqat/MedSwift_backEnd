@@ -1,7 +1,7 @@
 import User, { LoginResponse, SignupResponse, UserDocument, verifyResponse } from '../models/User'
 import * as bcrypt from 'bcrypt'
 import { generateAccessToken } from '../utils/generateAccessToken'
-import { Example, FormField, Post, Route, Tags } from 'tsoa'
+import { BodyProp, Example, Post, Route, Tags } from 'tsoa'
 import { LoginExample, signupExample, verificationExample } from './Examples/authExamples'
 import { generateRefreshToken } from '../utils/generateRefreshToken'
 import { sendEmail } from '../utils/sendEmail'
@@ -12,13 +12,7 @@ import randomstring from 'randomstring'
 export class AuthController {
   @Post('/signup')
   @Example<SignupResponse>(signupExample)
-  async signup(
-    @FormField() name,
-    @FormField() email,
-    @FormField() password,
-    @FormField() conformPassword,
-    @FormField() role
-  ): Promise<SignupResponse> {
+  async signup(@BodyProp() name, @BodyProp() email, @BodyProp() password, @BodyProp() conformPassword, @BodyProp() role): Promise<SignupResponse> {
     const existingUser: UserDocument | null = await User.findOne({ email })
     if (existingUser) {
       throw {
@@ -50,7 +44,7 @@ export class AuthController {
 
   @Post('/login')
   @Example<LoginResponse>(LoginExample)
-  async login(@FormField() email, @FormField() password): Promise<LoginResponse> {
+  async login(@BodyProp() email, @BodyProp() password): Promise<LoginResponse> {
     const existingUser: UserDocument | null = await User.findOne({ email })
     if (!existingUser) {
       throw {
@@ -83,7 +77,7 @@ export class AuthController {
   }
   @Post('/email/verify')
   @Example<verifyResponse>(verificationExample)
-  async verifyEmail(@FormField() email: string, @FormField() verificationCode: string) {
+  async verifyEmail(@BodyProp() email: string, @BodyProp() verificationCode: string) {
     const user: UserDocument | null = await User.findOne({ email })
     if (!user)
       throw {
