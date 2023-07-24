@@ -12,3 +12,15 @@ export const medicineInfoValidation = (data: MedicineDocument): Joi.ValidationRe
     price: Joi.number().required(),
     quantity: Joi.number().required()
   }).validate(data)
+
+// export const medicineFileValidation = (data: UploadedImage): Joi.ValidationResult =>
+//   Joi.object({
+//     folderName: Joi.string(),
+//     originalName: Joi.string(),
+//     encoding: Joi.string(),
+//     mimeType: Joi.string(),
+//     destination: Joi.string(),
+//     fileName: Joi.string(),
+//     path: Joi.string(),
+//     size: Joi.string()
+//   }).validate(data)

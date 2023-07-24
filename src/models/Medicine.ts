@@ -12,12 +12,15 @@ export interface MedicineDocument extends Document {
   availability: boolean
   price: number
   quantity: number
+  imageUrl: string[]
   user: Types.ObjectId
 }
+
 export interface MedicineResponse {
   code: number
   message: string
 }
+export interface uploadImageResponse extends MedicineResponse {}
 
 const medicineSchema = new schema<MedicineDocument>({
   name: { type: String, required: true },
@@ -28,6 +31,7 @@ const medicineSchema = new schema<MedicineDocument>({
   availability: { type: Boolean, required: true },
   price: { type: Number, required: true },
   quantity: { type: Number, required: true },
+  imageUrl: Array,
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User'
