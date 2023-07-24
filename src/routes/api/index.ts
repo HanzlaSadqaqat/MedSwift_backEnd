@@ -8,7 +8,7 @@ const router = express.Router()
 
 router.use('/auth', authRouter)
 router.use('/session', sessionRouter)
-router.use('/medicine', medicineRouter)
+router.use('/medicine/upload', medicineRouter)
 
 router.use(
   '/',
